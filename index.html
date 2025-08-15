@@ -3,22 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tool Pro - Professional PDF Tools">
+    <meta name="description" content="Free online PDF tools - Merge, Split, Compress, Convert PDFs. 100% secure, works offline.">
     <meta name="theme-color" content="#6366F1">
+    
+    <!-- SEO & Social Media Meta Tags -->
+    <meta property="og:title" content="Tool Pro - Professional PDF Tools">
+    <meta property="og:description" content="Free online PDF tools - Merge, Split, Compress, Convert PDFs. 100% secure, works offline.">
+    <meta property="og:image" content="https://toolpro-sandy.vercel.app/og-image.png">
+    <meta property="og:url" content="https://toolpro-sandy.vercel.app">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234F46E5'%3E%3Cpath d='M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z'/%3E%3C/svg%3E">
+    
+    <!-- PWA Manifest -->
     <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiVG9vbCBQcm8iLCJzaG9ydF9uYW1lIjoiVG9vbFBybyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwic3RhcnRfdXJsIjoiLiIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmIiwidGhlbWVfY29sb3IiOiIjNjM2NkYxIn0=">
+    
     <title>Tool Pro - Professional PDF Tools</title>
     
-    <!-- External Libraries -->
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <!-- External Libraries with defer for better performance -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Vercel Analytics -->
+    <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
     
     <script>
         tailwind.config = {
@@ -109,9 +125,26 @@
             border-color: #6366F1 !important;
             background-color: rgba(99, 102, 241, 0.05) !important;
         }
+        
+        #loadingScreen {
+            transition: opacity 0.3s ease-out;
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-white dark:bg-gray-900 z-[9999] flex items-center justify-center">
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 mb-4">
+                <svg class="animate-spin h-12 w-12 text-indigo-600" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+            <p class="text-gray-600 dark:text-gray-400">Loading Tool Pro...</p>
+        </div>
+    </div>
+
     <!-- Background -->
     <div class="fixed inset-0 -z-10 overflow-hidden">
         <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float dark:opacity-30"></div>
@@ -246,6 +279,57 @@
     <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
 
     <script>
+        // Global error handlers
+        window.addEventListener('error', function(e) {
+            console.error('Error caught:', e.error);
+            if (!e.filename || !e.filename.includes('http')) {
+                showToast('An error occurred. Please try again.', 'error');
+            }
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled promise rejection:', e.reason);
+        });
+
+        // Check libraries and initialize
+        window.addEventListener('DOMContentLoaded', function() {
+            let librariesLoaded = false;
+            const checkLibraries = setInterval(() => {
+                if (typeof PDFLib !== 'undefined' && 
+                    typeof pdfjsLib !== 'undefined' && 
+                    typeof saveAs !== 'undefined') {
+                    clearInterval(checkLibraries);
+                    if (!librariesLoaded) {
+                        librariesLoaded = true;
+                        console.log('All libraries loaded successfully');
+                        initializeApp();
+                        hideLoadingScreen();
+                    }
+                }
+            }, 100);
+            
+            // Timeout after 5 seconds
+            setTimeout(() => {
+                clearInterval(checkLibraries);
+                if (!librariesLoaded) {
+                    console.error('Some libraries failed to load');
+                    showToast('Please refresh the page', 'error');
+                    hideLoadingScreen();
+                }
+            }, 5000);
+        });
+
+        // Hide loading screen
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 300);
+            }
+        }
+
         // Initialize PDF.js worker
         if (typeof pdfjsLib !== 'undefined') {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -361,15 +445,11 @@
         ];
 
         // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-            initializeTheme();
-        });
-
         function initializeApp() {
             const savedLanguage = localStorage.getItem('language') || 'en';
             changeLanguage(savedLanguage);
             renderTools();
+            initializeTheme();
         }
 
         function initializeTheme() {
@@ -391,6 +471,8 @@
 
         function renderTools() {
             const toolsGrid = document.getElementById('toolsGrid');
+            if (!toolsGrid) return;
+            
             toolsGrid.innerHTML = '';
             
             tools.forEach((tool, index) => {
@@ -1270,8 +1352,7 @@
                 const imgData = canvas.toDataURL('image/png');
                 const imgWidth = 190;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
                 updateProgress(90);
                 
                 doc.save(uploadedFiles[0].name.replace(/\.(docx?|doc)$/i, '.pdf'));
@@ -1382,7 +1463,7 @@
             const parts = rangeString.split(',');
             
             parts.forEach(part => {
-                                const trimmed = part.trim();
+                const trimmed = part.trim();
                 if (trimmed.includes('-')) {
                     const [start, end] = trimmed.split('-').map(n => parseInt(n.trim()));
                     const range = [];
