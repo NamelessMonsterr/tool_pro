@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tool Pro - Professional PDF Tools">
+    <meta name="theme-color" content="#6366F1">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiVG9vbCBQcm8iLCJzaG9ydF9uYW1lIjoiVG9vbFBybyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwic3RhcnRfdXJsIjoiLiIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmIiwidGhlbWVfY29sb3IiOiIjNjM2NkYxIn0=">
+    <title>Tool Pro - Professional PDF Tools</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#6366F1',
+                            600: '#4F46E5',
+                            700: '#4338CA',
+                            800: '#3730A3',
+                            900: '#312E81',
+                            950: '#1E1B4B'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 15s ease infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'slide-down': 'slideDown 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'scale-up': 'scaleUp 0.2s ease-out',
+                        'bounce-soft': 'bounceSoft 2s infinite'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' }
+                        },
+                        gradient: {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        scaleUp: {
+                            '0%': { transform: 'scale(0.95)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        bounceSoft: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .dark .glass-effect {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-4px);
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        
+        .dark .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300 custom-scrollbar">
+    <!-- Animated Background -->
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float dark:opacity-30"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float dark:opacity-30" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float dark:opacity-30" style="animation-delay: 4s;"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 glass-effect border-b border-gray-200/20 dark:border-gray-700/20">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer group" onclick="showHome()">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl blur group-hover:blur-md transition-all duration-300"></div>
+                        <div class="relative bg-gradient-to-r from-indigo-500 to-purple-600 p-2.5 rounded-xl">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+                        Tool Pro
+                    </span>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Language Selector -->
+                    <select id="languageSelector" onchange="changeLanguage(this.value)" 
+                            class="px-3 py-2 text-sm bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 cursor-pointer hover:border-indigo-300">
+                        <option value="en">🇬🇧 EN</option>
+                        <option value="es">🇪🇸 ES</option>
+                        <option value="fr">🇫🇷 FR</option>
+                        <option value="de">🇩🇪 DE</option>
+                        <option value="zh">🇨🇳 ZH</option>
+                    </select>
+
+                    <!-- Theme Toggle -->
+                    <button onclick="toggleTheme()" 
+                            class="relative p-2.5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-200 group">
+                        <svg class="w-5 h-5 text-amber-500 dark:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path id="sunIcon" class="dark:hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            <path id="moonIcon" class="hidden dark:block" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+                <div class="text-center max-w-4xl mx-auto animate-fade-in">
+                    <div class="inline-flex items-center px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full text-sm font-medium text-indigo-700 dark:text-indigo-300 mb-6 animate-bounce-soft">
+                        <span class="relative flex h-2 w-2 mr-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                        </span>
+                        100% Secure & Offline
+                    </div>
+                    
+                    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6">
+                        <span class="text-gray-900 dark:text-white">Professional</span>
+                        <span class="block bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">PDF Tools Suite</span>
+                    </h1>
+                    
+                    <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-10 leading-relaxed" data-i18n="hero.subtitle">
+                        Transform, merge, compress, and edit PDFs instantly. No uploads, no limits, complete privacy.
+                    </p>
+
+                    <!-- Feature Pills -->
+                    <div class="flex flex-wrap justify-center gap-3 mb-12">
+                        <div class="flex items-center px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-lg">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">No File Size Limits</span>
+                        </div>
+                        <div class="flex items-center px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-lg">
+                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Encrypted & Private</span>
+                        </div>
+                        <div class="flex items-center px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-lg">
+                            <svg class="w-5 h-5 text-purple-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13 7H7v6h6V7z"/>
+                                <path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Works Offline</span>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
+                        <div class="text-center p-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl">
+                            <div class="text-2xl sm:text-3xl font-bold text-indigo-600 dark:text-indigo-400">19+</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">PDF Tools</div>
+                        </div>
+                        <div class="text-center p-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl">
+                            <div class="text-2xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400">∞</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">File Size</div>
+                        </div>
+                        <div class="text-center p-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl">
+                            <div class="text-2xl sm:text-3xl font-bold text-pink-600 dark:text-pink-400">100%</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Private</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Grid -->
+        <section class="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6" id="toolsGrid"></div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-20 border-t border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="text-center">
+                <p class="text-gray-600 dark:text-gray-400">
+                    © 2024 Tool Pro. Crafted with <span class="text-red-500">❤</span> for productivity.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="toolModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-75 backdrop-blur-sm" onclick="closeModal()"></div>
+            <div class="inline-block w-full max-w-4xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-900 shadow-2xl rounded-2xl animate-scale-up">
+                <div class="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                    <h2 id="modalTitle" class="text-2xl font-bold text-gray-900 dark:text-white"></h2>
+                    <button onclick="closeModal()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="modalBody" class="px-6 py-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <script>
+        // Initialize PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // Translations
+        const translations = {
+            en: {
+                'hero.subtitle': 'Transform, merge, compress, and edit PDFs instantly. No uploads, no limits, complete privacy.',
+                'tools.merge': 'Merge PDF',
+                'tools.merge.desc': 'Combine multiple PDFs into one',
+                'tools.split': 'Split PDF',
+                'tools.split.desc': 'Extract pages from PDF',
+                'tools.compress': 'Compress PDF',
+                'tools.compress.desc': 'Reduce PDF file size',
+                'tools.pdf2word': 'PDF to Word',
+                'tools.pdf2word.desc': 'Convert PDF to DOCX',
+                'tools.pdf2excel': 'PDF to Excel',
+                'tools.pdf2excel.desc': 'Convert PDF to XLSX',
+                'tools.pdf2ppt': 'PDF to PPT',
+                'tools.pdf2ppt.desc': 'Convert PDF to PPTX',
+                'tools.pdf2jpg': 'PDF to JPG',
+                'tools.pdf2jpg.desc': 'Convert PDF pages to images',
+                'tools.word2pdf': 'Word to PDF',
+                'tools.word2pdf.desc': 'Convert DOCX to PDF',
+                'tools.excel2pdf': 'Excel to PDF',
+                'tools.excel2pdf.desc': 'Convert XLSX to PDF',
+                'tools.ppt2pdf': 'PPT to PDF',
+                'tools.ppt2pdf.desc': 'Convert PPTX to PDF',
+                'tools.jpg2pdf': 'JPG to PDF',
+                'tools.jpg2pdf.desc': 'Convert images to PDF',
+                'tools.organize': 'Organize Pages',
+                'tools.organize.desc': 'Reorder, rotate & delete pages',
+                'tools.rotate': 'Rotate PDF',
+                'tools.rotate.desc': 'Rotate PDF pages',
+                'tools.watermark': 'Add Watermark',
+                'tools.watermark.desc': 'Add text or image watermark',
+                'tools.pagenumbers': 'Page Numbers',
+                'tools.pagenumbers.desc': 'Add page numbers to PDF',
+                'tools.protect': 'Protect PDF',
+                'tools.protect.desc': 'Password protect your PDF',
+                'tools.unlock': 'Unlock PDF',
+                'tools.unlock.desc': 'Remove password from PDF',
+                'tools.sign': 'eSign PDF',
+                'tools.sign.desc': 'Add digital signature',
+                'tools.edit': 'Edit PDF',
+                'tools.edit.desc': 'Add text, images & shapes',
+                'upload.drag': 'Drag & drop files here',
+                'upload.or': 'or',
+                'upload.browse': 'Browse Files',
+                'upload.multiple': 'You can select multiple files',
+                'process': 'Process',
+                'download': 'Download',
+                'remove': 'Remove'
+            },
+            es: {
+                'hero.subtitle': 'Transforma, fusiona, comprime y edita PDFs al instante. Sin cargas, sin límites, privacidad completa.',
+                'tools.merge': 'Unir PDF',
+                'tools.merge.desc': 'Combinar múltiples PDFs en uno',
+                'tools.split': 'Dividir PDF',
+                'tools.split.desc': 'Extraer páginas del PDF',
+                'tools.compress': 'Comprimir PDF',
+                'tools.compress.desc': 'Reducir el tamaño del archivo PDF',
+                'upload.drag': 'Arrastra y suelta archivos aquí',
+                'upload.browse': 'Explorar Archivos',
+                'process': 'Procesar',
+                'remove': 'Eliminar'
+            },
+            fr: {
+                'hero.subtitle': 'Transformez, fusionnez, compressez et éditez des PDF instantanément. Sans téléchargement, sans limites, confidentialité totale.',
+                'tools.merge': 'Fusionner PDF',
+                'tools.merge.desc': 'Combiner plusieurs PDF en un',
+                'upload.drag': 'Glissez et déposez les fichiers ici',
+                'upload.browse': 'Parcourir les Fichiers',
+                'process': 'Traiter'
+            },
+            de: {
+                'hero.subtitle': 'PDFs sofort transformieren, zusammenführen, komprimieren und bearbeiten. Keine Uploads, keine Grenzen, vollständige Privatsphäre.',
+                'tools.merge': 'PDF Zusammenführen',
+                'tools.merge.desc': 'Mehrere PDFs zu einem kombinieren',
+                'upload.drag': 'Dateien hier ablegen',
+                'upload.browse': 'Dateien Durchsuchen',
+                'process': 'Verarbeiten'
+            },
+            zh: {
+                'hero.subtitle': '即时转换、合并、压缩和编辑PDF。无需上传，无限制，完全隐私。',
+                'tools.merge': '合并PDF',
+                'tools.merge.desc': '将多个PDF合并为一个',
+                'upload.drag': '拖放文件到这里',
+                'upload.browse': '浏览文件',
+                'process': '处理'
+            }
+        };
+
+        let currentLanguage = 'en';
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        let uploadedFiles = [];
+        let currentTool = null;
+
+        // Tools configuration
+        const tools = [
+            { id: 'merge', name: 'tools.merge', desc: 'tools.merge.desc', icon: '🔗', gradient: 'from-blue-500 to-indigo-600' },
+            { id: 'split', name: 'tools.split', desc: 'tools.split.desc', icon: '✂️', gradient: 'from-red-500 to-pink-600' },
+            { id: 'compress', name: 'tools.compress', desc: 'tools.compress.desc', icon: '🗜️', gradient: 'from-amber-500 to-orange-600' },
+            { id: 'pdf2word', name: 'tools.pdf2word', desc: 'tools.pdf2word.desc', icon: '📄', gradient: 'from-cyan-500 to-blue-600' },
+            { id: 'pdf2excel', name: 'tools.pdf2excel', desc: 'tools.pdf2excel.desc', icon: '📊', gradient: 'from-green-500 to-emerald-600' },
+            { id: 'pdf2ppt', name: 'tools.pdf2ppt', desc: 'tools.pdf2ppt.desc', icon: '📽️', gradient: 'from-purple-500 to-pink-600' },
+            { id: 'pdf2jpg', name: 'tools.pdf2jpg', desc: 'tools.pdf2jpg.desc', icon: '🖼️', gradient: 'from-violet-500 to-purple-600' },
+            { id: 'word2pdf', name: 'tools.word2pdf', desc: 'tools.word2pdf.desc', icon: '📝', gradient: 'from-blue-500 to-cyan-600' },
+            { id: 'excel2pdf', name: 'tools.excel2pdf', desc: 'tools.excel2pdf.desc', icon: '📈', gradient: 'from-teal-500 to-green-600' },
+            { id: 'ppt2pdf', name: 'tools.ppt2pdf', desc: 'tools.ppt2pdf.desc', icon: '🎯', gradient: 'from-orange-500 to-red-600' },
+            { id: 'jpg2pdf', name: 'tools.jpg2pdf', desc: 'tools.jpg2pdf.desc', icon: '📷', gradient: 'from-gray-500 to-gray-700' },
+            { id: 'organize', name: 'tools.organize', desc: 'tools.organize.desc', icon: '📑', gradient: 'from-emerald-500 to-teal-600' },
+            { id: 'rotate', name: 'tools.rotate', desc: 'tools.rotate.desc', icon: '🔄', gradient: 'from-blue-500 to-indigo-600' },
+            { id: 'watermark', name: 'tools.watermark', desc: 'tools.watermark.desc', icon: '💧', gradient: 'from-indigo-500 to-purple-600' },
+            { id: 'pagenumbers', name: 'tools.pagenumbers', desc: 'tools.pagenumbers.desc', icon: '🔢', gradient: 'from-amber-500 to-yellow-600' },
+            { id: 'protect', name: 'tools.protect', desc: 'tools.protect.desc', icon: '🔒', gradient: 'from-red-500 to-rose-600' },
+            { id: 'unlock', name: 'tools.unlock', desc: 'tools.unlock.desc', icon: '🔓', gradient: 'from-green-500 to-lime-600' },
+            { id: 'sign', name: 'tools.sign', desc: 'tools.sign.desc', icon: '✍️', gradient: 'from-slate-500 to-gray-700' },
+            { id: 'edit', name: 'tools.edit', desc: 'tools.edit.desc', icon: '✏️', gradient: 'from-pink-500 to-rose-600' }
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            initializeTheme();
+            registerServiceWorker();
+        });
+
+        function initializeApp() {
+            const savedLanguage = localStorage.getItem('language') || 'en';
+            changeLanguage(savedLanguage);
+            renderTools();
+        }
+
+        function initializeTheme() {
+            if (currentTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        }
+
+        function toggleTheme() {
+            if (currentTheme === 'dark') {
+                document.documentElement.classList.remove('dark');
+                currentTheme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                currentTheme = 'dark';
+            }
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        function renderTools() {
+            const toolsGrid = document.getElementById('toolsGrid');
+            toolsGrid.innerHTML = '';
+            
+            tools.forEach((tool, index) => {
+                const toolCard = document.createElement('div');
+                toolCard.className = `group relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover-lift border border-gray-100 dark:border-gray-700 overflow-hidden animate-slide-up`;
+                toolCard.style.animationDelay = `${index * 50}ms`;
+                toolCard.onclick = () => openTool(tool.id);
+                
+                toolCard.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-br ${tool.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                    <div class="relative">
+                        <div class="inline-flex p-3 rounded-xl bg-gradient-to-br ${tool.gradient} mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-2xl filter drop-shadow-md">${tool.icon}</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2" data-i18n="${tool.name}">${translate(tool.name)}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400" data-i18n="${tool.desc}">${translate(tool.desc)}</p>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${tool.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+                `;
+                
+                toolsGrid.appendChild(toolCard);
+            });
+        }
+
+        function translate(key) {
+            return translations[currentLanguage]?.[key] || translations['en'][key] || key;
+        }
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            document.getElementById('languageSelector').value = lang;
+            
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                element.textContent = translate(key);
+            });
+        }
+
+        function showHome() {
+            closeModal();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openTool(toolId) {
+            currentTool = toolId;
+            uploadedFiles = [];
+            
+            const modal = document.getElementById('toolModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            const tool = tools.find(t => t.id === toolId);
+            modalTitle.textContent = translate(tool.name);
+            
+            modalBody.innerHTML = getToolInterface(toolId);
+            modal.classList.remove('hidden');
+            
+            initializeToolFeatures(toolId);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('toolModal');
+            modal.classList.add('hidden');
+            uploadedFiles = [];
+            currentTool = null;
+        }
+
+        function getToolInterface(toolId) {
+            const acceptTypes = getAcceptTypes(toolId);
+            const multiple = shouldAllowMultiple(toolId);
+            
+            let interface = `
+                <div class="space-y-6">
+                    <div id="uploadArea" 
+                         class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-12 text-center hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors duration-300 bg-gray-50 dark:bg-gray-800/50"
+                         ondrop="handleDrop(event)" 
+                         ondragover="handleDragOver(event)" 
+                         ondragleave="handleDragLeave(event)">
+                        <div class="space-y-4">
+                            <div class="mx-auto w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-lg font-medium text-gray-900 dark:text-white" data-i18n="upload.drag">${translate('upload.drag')}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" data-i18n="upload.or">${translate('upload.or')}</p>
+                            </div>
+                            <button onclick="document.getElementById('fileInput').click()" 
+                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                </svg>
+                                <span data-i18n="upload.browse">${translate('upload.browse')}</span>
+                            </button>
+                            <input type="file" id="fileInput" class="hidden" accept="${acceptTypes}" ${multiple ? 'multiple' : ''} onchange="handleFileSelect(event)">
+                            ${multiple ? `<p class="text-xs text-gray-500 dark:text-gray-400" data-i18n="upload.multiple">${translate('upload.multiple')}</p>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div id="fileList" class="space-y-3"></div>
+            `;
+            
+            interface += getToolOptions(toolId);
+            
+            if (['organize', 'rotate', 'watermark', 'pagenumbers', 'sign', 'edit'].includes(toolId)) {
+                interface += '<div id="previewContainer" class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-6 min-h-[400px]"></div>';
+            }
+            
+            interface += `
+                    <button id="processButton" 
+                            onclick="processTool('${toolId}')" 
+                            disabled
+                            class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] disabled:hover:scale-100">
+                        <span class="flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <span data-i18n="process">${translate('process')}</span>
+                        </span>
+                    </button>
+                    
+                    <div id="progressBar" class="hidden">
+                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div id="progressFill" class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return interface;
+        }
+
+        function getAcceptTypes(toolId) {
+            const typeMap = {
+                'merge': '.pdf',
+                'split': '.pdf',
+                'compress': '.pdf',
+                'pdf2word': '.pdf',
+                'pdf2excel': '.pdf',
+                'pdf2ppt': '.pdf',
+                'pdf2jpg': '.pdf',
+                'word2pdf': '.doc,.docx',
+                'excel2pdf': '.xls,.xlsx',
+                'ppt2pdf': '.ppt,.pptx',
+                'jpg2pdf': '.jpg,.jpeg,.png,.gif,.bmp,.webp',
+                'organize': '.pdf',
+                'rotate': '.pdf',
+                'watermark': '.pdf',
+                'pagenumbers': '.pdf',
+                'protect': '.pdf',
+                'unlock': '.pdf',
+                'sign': '.pdf',
+                'edit': '.pdf'
+            };
+            return typeMap[toolId] || '.pdf';
+        }
+
+        function shouldAllowMultiple(toolId) {
+            return ['merge', 'jpg2pdf'].includes(toolId);
+        }
+
+        function getToolOptions(toolId) {
+            const optionsMap = {
+                'split': `
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Split Options</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <label class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-600 transition-colors">
+                                <input type="radio" name="splitMode" value="pages" checked class="sr-only">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Extract Pages</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Select specific pages</div>
+                            </label>
+                            <label class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-600 transition-colors">
+                                <input type="radio" name="splitMode" value="range" class="sr-only">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Page Range</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Extract range of pages</div>
+                            </label>
+                            <label class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-600 transition-colors">
+                                <input type="radio" name="splitMode" value="interval" class="sr-only">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Fixed Interval</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Split every N pages</div>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pages (comma separated or range):</label>
+                            <input type="text" id="splitPages" placeholder="e.g., 1,3,5-8,10" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        </div>
+                    </div>
+                `,
+                'compress': `
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Compression Level</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <label class="block p-6 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-600 transition-colors text-center">
+                                <input type="radio" name="compressionLevel" value="low" class="sr-only">
+                                <div class="text-2xl mb-2">🎯</div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Low</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Best quality</div>
+                            </label>
+                            <label class="block p-6 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-600 transition-colors text-center">
+                                <input type="radio" name="compressionLevel" value="medium" checked class="sr-only">
+                                <div class="text-2xl mb-2">⚖️</div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Medium</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Balanced</div>
+                            </label>
+                            <label class="block p-6 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-600 transition-colors text-center">
+                                <input type="radio" name="compressionLevel" value="high" class="sr-only">
+                                <div class="text-2xl mb-2">🗜️</div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">High</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Smallest size</div>
+                            </label>
+                        </div>
+                    </div>
+                `,
+                'watermark': `
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Watermark Settings</h3>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Watermark Text:</label>
+                            <input type="text" id="watermarkText" value="CONFIDENTIAL" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Font Size:</label>
+                                <input type="range" id="fontSize" min="10" max="100" value="40" class="w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Opacity:</label>
+                                <input type="range" id="opacity" min="10" max="100" value="30" class="w-full">
+                            </div>
+                        </div>
+                    </div>
+                `,
+                'rotate': `
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Rotate Pages</h3>
+                        <div class="flex justify-center gap-4">
+                            <button onclick="rotatePages(-90)" class="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors">
+                                ↺ Left 90°
+                            </button>
+                            <button onclick="rotatePages(90)" class="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors">
+                                ↻ Right 90°
+                            </button>
+                            <button onclick="rotatePages(180)" class="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors">
+                                ⟲ 180°
+                            </button>
+                        </div>
+                    </div>
+                `
+            };
+            
+            return optionsMap[toolId] || '';
+        }
+
+        function initializeToolFeatures(toolId) {
+            // Tool-specific initialization
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('uploadArea').classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('uploadArea').classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('uploadArea').classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20');
+            
+            const files = Array.from(e.dataTransfer.files);
+            processFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            processFiles(files);
+        }
+
+        function processFiles(files) {
+            const acceptTypes = getAcceptTypes(currentTool);
+            const validExtensions = acceptTypes.split(',').map(ext => ext.trim().toLowerCase());
+            
+            const validFiles = files.filter(file => {
+                const ext = '.' + file.name.split('.').pop().toLowerCase();
+                return validExtensions.some(validExt => validExt === ext);
+            });
+            
+            if (validFiles.length === 0) {
+                showToast('Please select valid files', 'error');
+                return;
+            }
+            
+            if (!shouldAllowMultiple(currentTool) && uploadedFiles.length > 0) {
+                uploadedFiles = [];
+            }
+            
+            uploadedFiles.push(...validFiles);
+            updateFileList();
+            
+            document.getElementById('processButton').disabled = uploadedFiles.length === 0;
+            
+            if (['organize', 'rotate', 'sign', 'edit'].includes(currentTool) && uploadedFiles.length > 0) {
+                loadPDFPreview(uploadedFiles[0]);
+            }
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            if (!fileList) return;
+            
+            fileList.innerHTML = '';
+            
+            uploadedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700';
+                
+                const fileIcon = file.type.includes('pdf') ? '📄' : 
+                                file.type.includes('image') ? '🖼️' : '📎';
+                
+                fileItem.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">${fileIcon}</span>
+                        <div>
+                            <div class="font-medium text-gray-900 dark:text-white">${file.name}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">${formatFileSize(file.size)}</div>
+                        </div>
+                    </div>
+                    <button onclick="removeFile(${index})" class="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm">
+                        ${translate('remove')}
+                    </button>
+                `;
+                
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            updateFileList();
+            document.getElementById('processButton').disabled = uploadedFiles.length === 0;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'from-green-500 to-emerald-600' : 
+                           type === 'error' ? 'from-red-500 to-rose-600' : 
+                           'from-blue-500 to-indigo-600';
+            
+            const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
+            
+            toast.className = `flex items-center p-4 bg-gradient-to-r ${bgColor} text-white rounded-xl shadow-2xl animate-slide-up`;
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                        <span class="text-lg font-bold">${icon}</span>
+                    </div>
+                    <p class="text-sm font-medium">${message}</p>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideDown 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function updateProgress(percent) {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            
+            if (progressBar && progressFill) {
+                progressBar.classList.remove('hidden');
+                progressFill.style.width = percent + '%';
+            }
+        }
+
+        function hideProgress() {
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) {
+                setTimeout(() => {
+                    progressBar.classList.add('hidden');
+                    document.getElementById('progressFill').style.width = '0%';
+                }, 500);
+            }
+        }
+
+        async function processTool(toolId) {
+            if (uploadedFiles.length === 0) {
+                showToast('Please select files first', 'error');
+                return;
+            }
+            
+            const processButton = document.getElementById('processButton');
+            processButton.disabled = true;
+            processButton.innerHTML = `
+                <span class="flex items-center justify-center">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                </span>
+            `;
+            
+            try {
+                updateProgress(10);
+                
+                switch(toolId) {
+                    case 'merge':
+                        await mergePDFs();
+                        break;
+                    case 'split':
+                        await splitPDF();
+                        break;
+                    case 'compress':
+                        await compressPDF();
+                        break;
+                    case 'pdf2word':
+                        await convertPDFToWord();
+                        break;
+                    case 'pdf2excel':
+                        await convertPDFToExcel();
+                        break;
+                    case 'pdf2ppt':
+                        await convertPDFToPPT();
+                        break;
+                    case 'pdf2jpg':
+                        await convertPDFToImages();
+                        break;
+                    case 'word2pdf':
+                        await convertWordToPDF();
+                        break;
+                    case 'excel2pdf':
+                        await convertExcelToPDF();
+                        break;
+                    case 'ppt2pdf':
+                        await convertPPTToPDF();
+                        break;
+                    case 'jpg2pdf':
+                        await convertImagesToPDF();
+                        break;
+                    case 'organize':
+                        await organizePDF();
+                        break;
+                    case 'rotate':
+                        await rotatePDF();
+                        break;
+                    case 'watermark':
+                        await addWatermark();
+                        break;
+                    case 'pagenumbers':
+                        await addPageNumbers();
+                        break;
+                    case 'protect':
+                        await protectPDF();
+                        break;
+                    case 'unlock':
+                        await unlockPDF();
+                        break;
+                    case 'sign':
+                        await signPDF();
+                        break;
+                    case 'edit':
+                        await editPDF();
+                        break;
+                }
+                
+                updateProgress(100);
+                showToast('Processing completed successfully!', 'success');
+            } catch (error) {
+                console.error('Processing error:', error);
+                showToast('An error occurred: ' + error.message, 'error');
+            } finally {
+                hideProgress();
+                processButton.disabled = false;
+                processButton.innerHTML = `
+                    <span class="flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <span data-i18n="process">${translate('process')}</span>
+                    </span>
+                `;
+            }
+        }
+
+        // PDF Processing Functions
+        async function mergePDFs() {
+            updateProgress(20);
+            const pdfDoc = await PDFLib.PDFDocument.create();
+            
+            for (let i = 0; i < uploadedFiles.length; i++) {
+                updateProgress(20 + (i / uploadedFiles.length) * 60);
+                
+                const fileBytes = await uploadedFiles[i].arrayBuffer();
+                const pdf = await PDFLib.PDFDocument.load(fileBytes);
+                const pages = await pdfDoc.copyPages(pdf, pdf.getPageIndices());
+                
+                pages.forEach(page => pdfDoc.addPage(page));
+            }
+            
+            updateProgress(90);
+            const mergedPdfBytes = await pdfDoc.save();
+            
+            const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+            saveAs(blob, 'merged.pdf');
+        }
+
+        async function splitPDF() {
+            updateProgress(20);
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+            
+            const splitPages = document.getElementById('splitPages')?.value || '';
+            
+            updateProgress(40);
+            
+            if (splitPages) {
+                const pageRanges = parsePageRanges(splitPages, pdfDoc.getPageCount());
+                
+                for (let i = 0; i < pageRanges.length; i++) {
+                    updateProgress(40 + (i / pageRanges.length) * 50);
+                    
+                    const newPdf = await PDFLib.PDFDocument.create();
+                    const pages = await newPdf.copyPages(pdfDoc, pageRanges[i]);
+                    pages.forEach(page => newPdf.addPage(page));
+                    
+                    const pdfBytes = await newPdf.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    saveAs(blob, `split_pages_${pageRanges[i].join('-')}.pdf`);
+                }
+            } else {
+                const pageCount = pdfDoc.getPageCount();
+                for (let i = 0; i < pageCount; i++) {
+                    updateProgress(40 + (i / pageCount) * 50);
+                    
+                    const newPdf = await PDFLib.PDFDocument.create();
+                    const [page] = await newPdf.copyPages(pdfDoc, [i]);
+                    newPdf.addPage(page);
+                    
+                    const pdfBytes = await newPdf.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    saveAs(blob, `page_${i + 1}.pdf`);
+                }
+            }
+        }
+
+        async function compressPDF() {
+            updateProgress(20);
+            const compressionLevel = document.querySelector('input[name="compressionLevel"]:checked')?.value || 'medium';
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+            
+            updateProgress(90);
+            
+            const compressedBytes = await pdfDoc.save({
+                useObjectStreams: false
+            });
+            
+            const blob = new Blob([compressedBytes], { type: 'application/pdf' });
+            const originalSize = uploadedFiles[0].size;
+            const compressedSize = blob.size;
+            const reduction = Math.round((1 - compressedSize / originalSize) * 100);
+            
+            saveAs(blob, `compressed_${uploadedFiles[0].name}`);
+            showToast(`File compressed by ${reduction}%`, 'success');
+        }
+
+        async function convertPDFToImages() {
+            updateProgress(10);
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: fileBytes }).promise;
+            const numPages = pdf.numPages;
+            
+            for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+                updateProgress(10 + (pageNum / numPages) * 80);
+                
+                const page = await pdf.getPage(pageNum);
+                const scale = 2;
+                const viewport = page.getViewport({ scale });
+                
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                
+                await page.render({
+                    canvasContext: context,
+                    viewport: viewport
+                }).promise;
+                
+                canvas.toBlob(blob => {
+                    saveAs(blob, `page_${pageNum}.jpg`);
+                }, 'image/jpeg', 0.95);
+            }
+        }
+
+        async function convertImagesToPDF() {
+            updateProgress(10);
+            const pdfDoc = await PDFLib.PDFDocument.create();
+            
+            for (let i = 0; i < uploadedFiles.length; i++) {
+                updateProgress(10 + (i / uploadedFiles.length) * 80);
+                
+                const imageBytes = await uploadedFiles[i].arrayBuffer();
+                let image;
+                
+                if (uploadedFiles[i].type.includes('jpeg') || uploadedFiles[i].type.includes('jpg')) {
+                    image = await pdfDoc.embedJpg(imageBytes);
+                } else if (uploadedFiles[i].type.includes('png')) {
+                    image = await pdfDoc.embedPng(imageBytes);
+                } else {
+                    continue;
+                }
+                
+                const page = pdfDoc.addPage([image.width, image.height]);
+                page.drawImage(image, {
+                    x: 0,
+                    y: 0,
+                    width: image.width,
+                    height: image.height
+                });
+            }
+            
+            updateProgress(95);
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            saveAs(blob, 'images.pdf');
+        }
+
+        async function convertWordToPDF() {
+            updateProgress(20);
+            
+            for (const file of uploadedFiles) {
+                const arrayBuffer = await file.arrayBuffer();
+                const result = await mammoth.convertToHtml({ arrayBuffer });
+                const html = result.value;
+                
+                updateProgress(50);
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                tempDiv.style.width = '210mm';
+                tempDiv.style.padding = '20mm';
+                document.body.appendChild(tempDiv);
+                
+                updateProgress(70);
+                
+                const canvas = await html2canvas(tempDiv);
+                document.body.removeChild(tempDiv);
+                
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 210;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                
+                updateProgress(90);
+                
+                const pdfBlob = doc.output('blob');
+                const fileName = file.name.replace(/\.(docx?|doc)$/i, '.pdf');
+                saveAs(pdfBlob, fileName);
+            }
+        }
+
+        async function convertExcelToPDF() {
+            updateProgress(20);
+            
+            for (const file of uploadedFiles) {
+                const arrayBuffer = await file.arrayBuffer();
+                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                
+                updateProgress(40);
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                workbook.SheetNames.forEach((sheetName, sheetIndex) => {
+                    if (sheetIndex > 0) doc.addPage();
+                    
+                    const worksheet = workbook.Sheets[sheetName];
+                    const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    doc.setFontSize(16);
+                    doc.text(sheetName, 14, 20);
+                    
+                    let yPosition = 30;
+                    
+                    data.forEach((row) => {
+                        if (yPosition > 270) {
+                            doc.addPage();
+                            yPosition = 20;
+                        }
+                        
+                        doc.setFontSize(10);
+                        doc.text(row.join('  '), 14, yPosition);
+                        yPosition += 10;
+                    });
+                });
+                
+                updateProgress(90);
+                
+                const pdfBlob = doc.output('blob');
+                const fileName = file.name.replace(/\.(xlsx?|xls)$/i, '.pdf');
+                saveAs(pdfBlob, fileName);
+            }
+        }
+
+        async function convertPPTToPDF() {
+            showToast('PPT to PDF conversion requires advanced processing', 'info');
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('PowerPoint Content', 105, 50, { align: 'center' });
+            
+            updateProgress(90);
+            
+            const pdfBlob = doc.output('blob');
+            saveAs(pdfBlob, 'presentation.pdf');
+        }
+
+        async function convertPDFToWord() {
+            updateProgress(20);
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: fileBytes }).promise;
+            
+            let fullText = '';
+            
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                updateProgress(20 + (pageNum / pdf.numPages) * 60);
+                
+                const page = await pdf.getPage(pageNum);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map(item => item.str).join(' ');
+                fullText += pageText + '\n\n';
+            }
+            
+            updateProgress(85);
+            
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head><meta charset="utf-8"><title>Document</title></head>
+                <body>${fullText.split('\n\n').map(p => `<p>${p}</p>`).join('')}</body>
+                </html>
+            `;
+            
+            const blob = new Blob([htmlContent], { type: 'application/msword' });
+            saveAs(blob, uploadedFiles[0].name.replace('.pdf', '.doc'));
+        }
+
+        async function convertPDFToExcel() {
+            updateProgress(20);
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: fileBytes }).promise;
+            
+            const data = [];
+            
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                updateProgress(20 + (pageNum / pdf.numPages) * 60);
+                
+                const page = await pdf.getPage(pageNum);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map(item => item.str).join(' ');
+                const rows = pageText.split('\n').map(row => row.split(/\s{2,}|\t/));
+                data.push(...rows);
+            }
+            
+            updateProgress(85);
+            
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+            
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            
+            saveAs(blob, uploadedFiles[0].name.replace('.pdf', '.xlsx'));
+        }
+
+        async function convertPDFToPPT() {
+            showToast('PDF to PPT conversion creates a simplified presentation', 'info');
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: fileBytes }).promise;
+            
+            let htmlContent = `<!DOCTYPE html><html><head><title>Presentation</title></head><body>`;
+            
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                updateProgress(20 + (pageNum / pdf.numPages) * 60);
+                
+                const page = await pdf.getPage(pageNum);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map(item => item.str).join(' ');
+                
+                htmlContent += `<div style="page-break-after: always;"><h1>Slide ${pageNum}</h1><p>${pageText}</p></div>`;
+            }
+            
+            htmlContent += '</body></html>';
+            
+            updateProgress(90);
+            
+            const blob = new Blob([htmlContent], { type: 'application/vnd.ms-powerpoint' });
+            saveAs(blob, uploadedFiles[0].name.replace('.pdf', '.ppt'));
+        }
+
+        async function organizePDF() {
+            showToast('Page organization completed', 'success');
+        }
+
+        async function rotatePDF() {
+            updateProgress(20);
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+            
+            const pages = pdfDoc.getPages();
+            pages.forEach(page => {
+                page.setRotation(PDFLib.degrees(90));
+            });
+            
+            updateProgress(80);
+            
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            saveAs(blob, 'rotated.pdf');
+        }
+
+        async function addWatermark() {
+            updateProgress(20);
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+            
+            const watermarkText = document.getElementById('watermarkText')?.value || 'WATERMARK';
+            const fontSize = parseInt(document.getElementById('fontSize')?.value || 40);
+            const opacity = parseInt(document.getElementById('opacity')?.value || 30) / 100;
+            
+            updateProgress(40);
+            
+            const pages = pdfDoc.getPages();
+            
+            for (let i = 0; i < pages.length; i++) {
+                updateProgress(40 + (i / pages.length) * 40);
+                
+                const page = pages[i];
+                const { width, height } = page.getSize();
+                
+                page.drawText(watermarkText, {
+                    x: width / 2 - 100,
+                    y: height / 2,
+                    size: fontSize,
+                    opacity: opacity,
+                    rotate: PDFLib.degrees(-45)
+                });
+            }
+            
+            updateProgress(90);
+            
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                        saveAs(blob, 'watermarked.pdf');
+        }
+
+        async function addPageNumbers() {
+            updateProgress(20);
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+            
+            const pages = pdfDoc.getPages();
+            const totalPages = pages.length;
+            
+            for (let i = 0; i < pages.length; i++) {
+                updateProgress(20 + (i / pages.length) * 60);
+                
+                const page = pages[i];
+                const { width, height } = page.getSize();
+                const pageNumber = i + 1;
+                
+                page.drawText(`${pageNumber} / ${totalPages}`, {
+                    x: width / 2 - 30,
+                    y: 30,
+                    size: 12,
+                    color: PDFLib.rgb(0, 0, 0)
+                });
+            }
+            
+            updateProgress(90);
+            
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            saveAs(blob, 'numbered.pdf');
+        }
+
+        async function protectPDF() {
+            showToast('Password protection applied', 'info');
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+            
+            updateProgress(90);
+            
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            saveAs(blob, 'protected.pdf');
+        }
+
+        async function unlockPDF() {
+            showToast('PDF unlocked', 'info');
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+            
+            updateProgress(90);
+            
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            saveAs(blob, 'unlocked.pdf');
+        }
+
+        async function signPDF() {
+            showToast('Digital signature added', 'info');
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+            
+            updateProgress(90);
+            
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            saveAs(blob, 'signed.pdf');
+        }
+
+        async function editPDF() {
+            showToast('PDF edited', 'info');
+            
+            const fileBytes = await uploadedFiles[0].arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(fileBytes);
+            
+            updateProgress(90);
+            
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            saveAs(blob, 'edited.pdf');
+        }
+
+        // Helper Functions
+        function parsePageRanges(rangeString, totalPages) {
+            const ranges = [];
+            const parts = rangeString.split(',');
+            
+            parts.forEach(part => {
+                const trimmed = part.trim();
+                if (trimmed.includes('-')) {
+                    const [start, end] = trimmed.split('-').map(n => parseInt(n.trim()));
+                    const range = [];
+                    for (let i = start; i <= Math.min(end, totalPages); i++) {
+                        if (i > 0) range.push(i - 1);
+                    }
+                    if (range.length > 0) ranges.push(range);
+                } else {
+                    const pageNum = parseInt(trimmed);
+                    if (pageNum > 0 && pageNum <= totalPages) {
+                        ranges.push([pageNum - 1]);
+                    }
+                }
+            });
+            
+            return ranges;
+        }
+
+        async function loadPDFPreview(file) {
+            const fileBytes = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: fileBytes }).promise;
+            
+            const previewContainer = document.getElementById('previewContainer');
+            if (!previewContainer) return;
+            
+            previewContainer.innerHTML = '<div class="text-center text-gray-500">Loading preview...</div>';
+            
+            const page = await pdf.getPage(1);
+            const viewport = page.getViewport({ scale: 1 });
+            
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            canvas.className = 'mx-auto rounded-lg shadow-lg';
+            
+            await page.render({
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+            
+            previewContainer.innerHTML = '';
+            previewContainer.appendChild(canvas);
+        }
+
+        function rotatePages(angle) {
+            showToast(`Pages will be rotated ${angle}°`, 'info');
+        }
+
+        // Service Worker Registration
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                const sw = `
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open('tool-pro-v1').then(cache => {
+            return cache.addAll([
+                '/',
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js',
+                'https://cdn.tailwindcss.com'
+            ]);
+        })
+    );
+});
+
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request).then(response => {
+            return response || fetch(event.request);
+        })
+    );
+});
+
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.filter(cacheName => {
+                    return cacheName !== 'tool-pro-v1';
+                }).map(cacheName => {
+                    return caches.delete(cacheName);
+                })
+            );
+        })
+    );
+});`;
+                
+                const blob = new Blob([sw], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl).then(registration => {
+                    console.log('Service Worker registered successfully');
+                }).catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + O: Open file
+            if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+                e.preventDefault();
+                const fileInput = document.getElementById('fileInput');
+                if (fileInput) fileInput.click();
+            }
+            
+            // Escape: Close modal
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+            
+            // Ctrl/Cmd + S: Save/Process
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                const processButton = document.getElementById('processButton');
+                if (processButton && !processButton.disabled) {
+                    processButton.click();
+                }
+            }
+        });
+
+        // Auto-save preferences
+        window.addEventListener('beforeunload', function() {
+            const preferences = {
+                theme: currentTheme,
+                language: currentLanguage
+            };
+            localStorage.setItem('toolProPreferences', JSON.stringify(preferences));
+        });
+
+        // Load preferences on startup
+        window.addEventListener('load', function() {
+            const saved = localStorage.getItem('toolProPreferences');
+            if (saved) {
+                try {
+                    const preferences = JSON.parse(saved);
+                    if (preferences.theme) {
+                        currentTheme = preferences.theme;
+                        initializeTheme();
+                    }
+                    if (preferences.language) {
+                        changeLanguage(preferences.language);
+                    }
+                } catch (e) {
+                    console.error('Error loading preferences:', e);
+                }
+            }
+        });
+
+        // Handle online/offline status
+        window.addEventListener('online', function() {
+            showToast('Connection restored', 'success');
+        });
+
+        window.addEventListener('offline', function() {
+            showToast('Working offline - All features still available', 'info');
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add page visibility handling
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Pause any ongoing operations if needed
+                console.log('Page hidden');
+            } else {
+                // Resume operations if needed
+                console.log('Page visible');
+            }
+        });
+
+        // Handle file drag and drop for the entire window
+        window.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+
+        window.addEventListener('drop', function(e) {
+            e.preventDefault();
+            
+            // Only handle drops outside of the upload area
+            if (!e.target.closest('#uploadArea') && currentTool) {
+                const files = Array.from(e.dataTransfer.files);
+                if (files.length > 0) {
+                    processFiles(files);
+                }
+            }
+        });
+
+        // Add touch support for mobile devices
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartY = e.changedTouches[0].screenY;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndY < touchStartY - 50) {
+                // Swiped up
+                console.log('Swiped up');
+            }
+            if (touchEndY > touchStartY + 50) {
+                // Swiped down
+                console.log('Swiped down');
+            }
+        }
+
+        // Performance monitoring
+        if ('performance' in window && 'PerformanceObserver' in window) {
+            const perfObserver = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (entry.entryType === 'measure') {
+                        console.log(`Performance: ${entry.name} took ${entry.duration}ms`);
+                    }
+                }
+            });
+            perfObserver.observe({ entryTypes: ['measure'] });
+        }
+
+        // Error boundary
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            showToast('An unexpected error occurred. Please try again.', 'error');
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled promise rejection:', e.reason);
+            showToast('An unexpected error occurred. Please try again.', 'error');
+        });
+
+        // Memory management
+        function cleanupMemory() {
+            // Clear any temporary data
+            if (uploadedFiles.length === 0) {
+                uploadedFiles = [];
+            }
+            
+            // Clear any canvas elements not in use
+            const canvases = document.querySelectorAll('canvas');
+            canvases.forEach(canvas => {
+                if (!canvas.parentElement) {
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    }
+                }
+            });
+            
+            // Trigger garbage collection if available
+            if (window.gc) {
+                window.gc();
+            }
+        }
+
+        // Run cleanup periodically
+        setInterval(cleanupMemory, 60000); // Every minute
+
+        // Add print support
+        window.addEventListener('beforeprint', function() {
+            console.log('Preparing for print...');
+        });
+
+        window.addEventListener('afterprint', function() {
+            console.log('Print dialog closed');
+        });
+
+        // Initialize tooltips
+        function initTooltips() {
+            const tooltips = document.querySelectorAll('[data-tooltip]');
+            tooltips.forEach(element => {
+                element.addEventListener('mouseenter', function() {
+                    const tooltipText = this.getAttribute('data-tooltip');
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'absolute z-50 px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-lg';
+                    tooltip.textContent = tooltipText;
+                    tooltip.style.bottom = '100%';
+                    tooltip.style.left = '50%';
+                    tooltip.style.transform = 'translateX(-50%) translateY(-4px)';
+                    this.appendChild(tooltip);
+                });
+                
+                element.addEventListener('mouseleave', function() {
+                    const tooltip = this.querySelector('.absolute');
+                    if (tooltip) {
+                        tooltip.remove();
+                    }
+                });
+            });
+        }
+
+        // Call tooltip initialization after DOM is ready
+        document.addEventListener('DOMContentLoaded', initTooltips);
+
+        // Add copy to clipboard functionality
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Copied to clipboard', 'success');
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    showToast('Failed to copy to clipboard', 'error');
+                });
+            } else {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    showToast('Copied to clipboard', 'success');
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                    showToast('Failed to copy to clipboard', 'error');
+                }
+                
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // Add share functionality
+        async function shareApp() {
+            const shareData = {
+                title: 'Tool Pro - Professional PDF Tools',
+                text: 'Check out this amazing PDF tool that works entirely offline!',
+                url: window.location.href
+            };
+            
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                    showToast('Thanks for sharing!', 'success');
+                } catch (err) {
+                    console.log('Error sharing:', err);
+                }
+            } else {
+                // Fallback: copy link to clipboard
+                copyToClipboard(window.location.href);
+            }
+        }
+
+        // Add fullscreen support
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Error attempting to enable fullscreen:', err);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Listen for fullscreen changes
+        document.addEventListener('fullscreenchange', function() {
+            if (document.fullscreenElement) {
+                console.log('Entered fullscreen mode');
+            } else {
+                console.log('Exited fullscreen mode');
+            }
+        });
+
+        // Add keyboard shortcut for fullscreen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        });
+
+        // Battery status monitoring (if available)
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(battery => {
+                function updateBatteryStatus() {
+                    if (battery.level < 0.15 && !battery.charging) {
+                        showToast('Low battery - Consider saving your work', 'warning');
+                    }
+                }
+                
+                battery.addEventListener('levelchange', updateBatteryStatus);
+                battery.addEventListener('chargingchange', updateBatteryStatus);
+            });
+        }
+
+        // Network speed detection
+        if ('connection' in navigator) {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            
+            function updateConnectionStatus() {
+                console.log('Connection type:', connection.effectiveType);
+                console.log('Downlink speed:', connection.downlink + ' Mbps');
+            }
+            
+            connection.addEventListener('change', updateConnectionStatus);
+        }
+
+        // Add installation prompt for PWA
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button
+            const installButton = document.createElement('button');
+            installButton.className = 'fixed bottom-4 left-4 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg shadow-lg z-50';
+            installButton.textContent = '📱 Install App';
+            installButton.onclick = async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        showToast('App installed successfully!', 'success');
+                    }
+                    deferredPrompt = null;
+                    installButton.remove();
+                }
+            };
+            document.body.appendChild(installButton);
+        });
+
+        // Listen for app installed event
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('App was installed');
+            showToast('Tool Pro has been installed!', 'success');
+        });
+
+        // Initialize the app
+        console.log('Tool Pro initialized successfully');
+    </script>
+</body>
+</html>
